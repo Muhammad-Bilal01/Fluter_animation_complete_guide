@@ -24,11 +24,11 @@ class _RadialProgressAnimationState extends State<RadialProgressAnimation>
   void initState() {
     super.initState();
 
-    controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1500));
 
-    animation =
-        Tween<double>(begin: 0, end: widget.progress).animate(controller);
+    animation = Tween<double>(begin: 0, end: widget.progress)
+        .animate(CurvedAnimation(parent: controller, curve: Curves.ease));
   }
 
   @override
@@ -45,14 +45,14 @@ class _RadialProgressAnimationState extends State<RadialProgressAnimation>
                     width: 150,
                     height: 150,
                     child: CircularProgressIndicator(
-                      value: widget.progress,
+                      value: animation.value,
                       strokeWidth: 10,
                       backgroundColor: Colors.grey.shade100,
                       color: widget.color,
                     ),
                   ),
                   Text(
-                    '${(widget.progress * 100).toInt()}%',
+                    '${(animation.value * 100).toInt()}%',
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -64,7 +64,10 @@ class _RadialProgressAnimationState extends State<RadialProgressAnimation>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          controller.forward();
+          if (controller.isCompleted) {
+            controller.reverse();
+          } else
+            controller.forward();
         },
         child: const Icon(Icons.start),
       ),
